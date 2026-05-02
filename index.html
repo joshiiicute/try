@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu Page</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            transition: 0.3s;
+        }
+
+        .dark-mode {
+            background: #1e1e1e;
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .menu-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #3498db;
+            color: white;
+        }
+
+        .menu-btn:hover {
+            background: #2980b9;
+        }
+
+        .logout {
+            background: #e74c3c;
+        }
+
+        .logout:hover {
+            background: #c0392b;
+        }
+
+        .box {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .dark-mode .box {
+            background: #2c2c2c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Menu</h1>
+
+    <button class="menu-btn" onclick="showSummary()">Transaction Summary</button>
+
+    <button class="menu-btn" onclick="toggleTheme()">Toggle Light / Dark Mode</button>
+
+    <button class="menu-btn" onclick="setGoal()">Goal Tracker</button>
+
+    <button class="menu-btn" onclick="addCategory()">Add Category</button>
+z
+    <button class="menu-btn logout" onclick="logout()">Log Out</button>
+
+    <div id="output" class="box"></div>
+</div>
+
+<script>
+    // LOAD THEME ON START
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+
+        if (document.body.classList.contains("dark-mode")) {
+            localStorage.setItem("theme", "dark");
+        } else {
+            localStorage.setItem("theme", "light");
+        }
+    }
+
+    // TRANSACTION SUMMARY
+    function showSummary() {
+        let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+
+        let income = 0;
+        let expense = 0;
+
+        transactions.forEach(t => {
+            if (t.type === "income") income += t.amount;
+            else expense += t.amount;
+        });
+
+        let balance = income - expense;
+
+        document.getElementById("output").innerHTML = `
+            <h3>Summary</h3>
+            <p><b>Balance:</b> ₱${balance}</p>
+            <p><b>Income:</b> ₱${income}</p>
+            <p><b>Expense:</b> ₱${expense}</p>
+        `;
+    }
+
+    // ADD CATEGORY
+    function addCategory() {
+        let category = prompt("Enter new category:");
+
+        if (category) {
+            let categories = JSON.parse(localStorage.getItem("categories")) || [];
+            categories.push(category);
+
+            localStorage.setItem("categories", JSON.stringify(categories));
+
+            alert("Category added!");
+        }
+    }
+
+    // GOAL TRACKER
+    function setGoal() {
+        let goal = prompt("Enter your savings goal:");
+
+        if (goal) {
+            localStorage.setItem("goal", goal);
+
+            document.getElementById("output").innerHTML = `
+                <h3>Goal Set</h3>
+                <p>Your goal: ₱${goal}</p>
+            `;
+        }
+    }
+
+    // LOGOUT
+    function logout() {
+        if (confirm("Are you sure you want to log out?")) {
+            localStorage.removeItem("loggedIn");
+
+            // redirect to login page
+            window.location.href = "login.html";
+        }
+    }
+</script>
+
+</body>
+</html>
