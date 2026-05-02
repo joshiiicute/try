@@ -3,71 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>onlygay</title>
+    <title>A Special Invitation</title>
     <style>
+        :root {
+            --primary-pink: #ffafbd;
+            --secondary-pink: #ffc3a0;
+            --text-color: #4a4a4a;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f2f5;
             margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-pink), var(--secondary-pink));
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
         }
-        .container {
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+            animation: fadeIn 1.5s ease-out;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         h1 {
-            color: #333;
+            color: #d63384;
+            font-size: 2rem;
+            margin-bottom: 1rem;
         }
+
+        p {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .heart {
+            color: #e74c3c;
+            font-size: 3rem;
+            animation: pulse 1.5s infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 2rem;
+        }
+
         button {
-            padding: 10px 25px;
-            font-size: 1rem;
-            cursor: pointer;
+            padding: 12px 25px;
             border: none;
-            border-radius: 5px;
-            margin: 10px;
-            transition: transform 0.2s;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        .yes-btn {
+
+        #yesBtn {
             background-color: #ff4757;
             color: white;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
         }
-        .no-btn {
-            background-color: #2f3542;
-            color: white;
+
+        #yesBtn:hover {
+            background-color: #ff6b81;
+            transform: scale(1.05);
         }
-        button:hover {
-            transform: scale(1.1);
+
+        #noBtn {
+            background-color: #f1f2f6;
+            color: #747d8c;
+            position: relative;
+        }
+
+        .success-message {
+            display: none;
+            margin-top: 20px;
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="container" id="box">
-        <h1 id="question">why are you gay?</h1>
-        <button class="yes-btn" onclick="sayWTF()">Yes</button>
-        <button class="no-btn" onclick="sayNothing()">No</button>
+    <div class="card">
+        <div class="heart">❤</div>
+        <h1>Hey there!</h1>
+        <p>I’ve been thinking about how much I enjoy our time together. I'd love to take you out on a proper date soon.</p>
+        <p><strong>Coffee, dinner, or a walk? You pick!</strong></p>
+        
+        <div class="buttons">
+            <button id="yesBtn" onclick="celebrate()">Yes!</button>
+            <button id="noBtn" onmouseover="moveButton()">No</button>
+        </div>
+
+        <div id="message" class="success-message">
+            Yay! I'll text you to finalize the details! 😊
+        </div>
     </div>
 
     <script>
-        function sayWTF() {
-           
-            document.getElementById('question').innerHTML = "wtf";
-         
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(btn => btn.style.display = 'none');
+        function moveButton() {
+            const btn = document.getElementById('noBtn');
+            const x = Math.random() * (window.innerWidth - btn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - btn.offsetHeight);
+            
+            btn.style.position = 'fixed';
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
         }
 
-        function sayNothing() {
-            alert("Understandable, have a nice day.");
+        function celebrate() {
+            const message = document.getElementById('message');
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            
+            message.style.display = 'block';
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            
+            // Basic confetti effect
+            for(let i = 0; i < 50; i++) {
+                createParticle();
+            }
+        }
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.innerHTML = '🌸';
+            particle.style.position = 'fixed';
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = '-20px';
+            particle.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            particle.style.zIndex = '1000';
+            particle.style.transition = 'transform 3s linear, opacity 3s';
+            
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.style.transform = `translateY(100vh) rotate(${Math.random() * 360}deg)`;
+                particle.style.opacity = '0';
+            }, 100);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 3000);
         }
     </script>
-
 </body>
 </html>
