@@ -5,126 +5,245 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>onlygay</title>
     <style>
-        body {
+        :root {
+            --primary: #ff0080;
+            --secondary: #7928ca;
+            --bg-gradient: linear-gradient(45deg, #ff004c, #ff8c00, #ffee00, #44ff00, #00bbff, #2b00ff, #9100ff);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            background: #0a0a0a;
             overflow: hidden;
+            color: white;
         }
 
-        @keyframes gradient {
+        /* Animated Rainbow Border */
+        .outer-frame {
+            position: relative;
+            padding: 5px;
+            border-radius: 40px;
+            background: var(--bg-gradient);
+            background-size: 300% 300%;
+            animation: flow 5s linear infinite;
+        }
+
+        @keyframes flow {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
-            padding: 3rem;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        .container {
+            background: #111;
+            padding: 60px;
+            border-radius: 35px;
             text-align: center;
-            width: 350px;
+            width: 500px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
         }
 
         h1 {
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 3rem;
+            margin-bottom: 20px;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #fff;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #fff, #888);
         }
 
-        .btn-group {
+        .subtitle {
+            color: #888;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        /* The Progress Bar (The "Length" Factor) */
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: #222;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--bg-gradient);
+            background-size: 200%;
+            border-radius: 10px;
+            transition: width 0.4s;
+        }
+
+        .btn-wrapper {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            height: 60px;
+            gap: 30px;
+            height: 70px;
+            align-items: center;
         }
 
-        button {
-            padding: 12px 35px;
+        .btn {
+            padding: 18px 45px;
             font-size: 1.2rem;
-            font-weight: bold;
+            font-weight: 800;
             border: none;
-            border-radius: 50px;
+            border-radius: 15px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s;
         }
 
         #yesBtn {
-            background: #ffffff;
-            color: #e73c7e;
+            background: white;
+            color: black;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
 
         #yesBtn:hover {
             transform: scale(1.1);
-            background: #ffe6f0;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
         }
 
         #noBtn {
-            background: #333;
+            background: #ff004c;
             color: white;
-            position: absolute;
-            z-index: 10;
+            position: fixed; /* Fixed so it moves relative to the whole screen */
+            z-index: 999;
         }
 
-        /* Smooth movement for the No button */
-        .moving {
-            transition: all 0.2s ease-out !important;
+        /* Floating particles for extra beauty */
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1 id="mainText">Are you gay?</h1>
-        <div class="btn-group">
-            <button id="yesBtn" onclick="handleYes()">Yes</button>
-            <button id="noBtn" onmouseover="dodge()" onclick="handleNo()">No</button>
+    <div class="outer-frame">
+        <div class="container">
+            <div class="progress-container" id="progCont">
+                <div class="progress-bar" id="progBar"></div>
+            </div>
+            
+            <h1 id="mainTitle">Are you gay?</h1>
+            <p class="subtitle" id="subTitle">Please be honest with yourself.</p>
+
+            <div class="btn-wrapper">
+                <button class="btn" id="yesBtn" onclick="onYes()">Yes</button>
+                <button class="btn" id="noBtn" onmouseover="teleport()" onclick="onNo()">No</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const mainText = document.getElementById('mainText');
+        const title = document.getElementById('mainTitle');
+        const sub = document.getElementById('subTitle');
+        const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
+        const progCont = document.getElementById('progCont');
+        const progBar = document.getElementById('progBar');
+
         let clickCount = 0;
 
-        function handleYes() {
-            mainText.innerText = "wtf";
-            mainText.style.color = "#fff";
-            document.querySelector('.btn-group').style.display = 'none';
+        // Set initial position of No button
+        function setInitialNo() {
+            const rect = yesBtn.getBoundingClientRect();
+            noBtn.style.left = (rect.right + 30) + 'px';
+            noBtn.style.top = rect.top + 'px';
         }
+        window.onload = setInitialNo;
 
-        function dodge() {
-            // Add the moving class for smooth transition
-            noBtn.classList.add('moving');
-            
-            // Calculate random positions
-            // Staying within 80% of the viewport to keep it visible
-            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 40);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 40);
+        function teleport() {
+            // Make the button run away
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 20);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 20);
             
             noBtn.style.left = x + 'px';
             noBtn.style.top = y + 'px';
-        }
-
-        function handleNo() {
-            clickCount++;
-            if(clickCount > 0) {
-                mainText.innerText = "You are still gay";
-                mainText.style.fontSize = "1.8rem";
+            
+            // Easter egg: make the "Yes" button bigger each time they try to hit "No"
+            const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            if (currentSize < 60) {
+                yesBtn.style.fontSize = (currentSize + 2) + 'px';
+                yesBtn.style.padding = (parseFloat(window.getComputedStyle(yesBtn).paddingTop) + 1) + 'px ' + 
+                                       (parseFloat(window.getComputedStyle(yesBtn).paddingLeft) + 2) + 'px';
             }
         }
+
+        function onYes() {
+            // Stage 1: The wtf
+            title.innerText = "wtf";
+            title.style.webkitTextFillColor = "#ff004c";
+            sub.innerText = "Processing your honesty...";
+            yesBtn.style.display = "none";
+            noBtn.style.display = "none";
+            progCont.style.display = "block";
+
+            // Artificial loading for "Long" effect
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    finish();
+                } else {
+                    width++;
+                    progBar.style.width = width + "%";
+                }
+            }, 30);
+        }
+
+        function finish() {
+            title.innerText = "Confirmed.";
+            sub.innerText = "The database has been updated. Have a fabulous day.";
+            document.body.style.background = "var(--bg-gradient)";
+            document.body.style.backgroundSize = "400% 400%";
+        }
+
+        function onNo() {
+            // This only triggers if they are fast enough or use Inspect Element
+            clickCount++;
+            title.innerText = "You are still gay";
+            title.style.fontSize = "2rem";
+            sub.innerText = `Attempt #${clickCount} to deny the truth failed.`;
+            
+            // Shake effect
+            const container = document.querySelector('.container');
+            container.style.animation = "none";
+            setTimeout(() => container.style.animation = "shake 0.5s", 10);
+        }
     </script>
+
+    <style>
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            50% { transform: translate(-1px, 2px) rotate(1deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            100% { transform: translate(1px, -2px) rotate(0deg); }
+        }
+    </style>
 </body>
 </html>
